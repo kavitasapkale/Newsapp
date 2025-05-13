@@ -1,70 +1,181 @@
-# Getting Started with Create React App
+// NEWSAPP.JS
+import React, { useEffect, useState } from 'react'
+import Card from './Card'
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+const Newsapp = () => {
 
-## Available Scripts
+    const API_KEY = "89bc76f7c8a14956aff1350b690bfbf9"; //from news api site
 
-In the project directory, you can run:
+    //by default set indian news when change a state it show indian news
+    const [search, setSearch] = useState("india")
+    const [newsData, setNewsData] = useState(null)
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+    // Store selected category (like sports, health, etc.)
+    const [category, setCategory] = useState('general');
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+    const getdata = async () => {
+        const response = await fetch(`https://newsapi.org/v2/everything?q=${search}&apiKey=${API_KEY}`);//back tick In  q we are passing data assign api kay inthis variable API_KEY
+        //this data is not json formate make this data in json formate
+        //we have three condition of data first data get ,pending,or resolve
+        //await is a wait untill data not converted into json
+        const jsonData = await response.json();
+        console.log(jsonData.articles);//articles is a aaray of news it takes from newsapi console
+        setNewsData(jsonData.articles);
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    }
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    // it is used for show data on the site  when first time refresh site this fuction call then is not call and data show on the site
+    //it is used cause when refresh site new are not dislay to show a news used useeffect fun
+    useEffect(() => {
+        getdata()
+    }, [])
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+    // ✅ This useEffect runs whenever search value changes
+    //this function used for button category when click fitness entertainment... show the result without search button use
+    useEffect(() => {
+        if (search !== "india") {
+            getdata(); // fetch new data when category or search changes
+        }
+    }, [search]);
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+    const handleInput = (e) => {
+        console.log(e.target.value);//the value of serch input display on console
+        setSearch(e.target.value)
+    }
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+    const userInput = (event) => {
+        setSearch(event.target.value)
+    }
 
-### Code Splitting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
 
-### Analyzing the Bundle Size
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+    return (
+        <div>
+            <nav>
+                <div>
+                    <h1>Trendy news</h1>
+                    <ul>
+                        <a>All news</a>
+                        <a>Treanding</a>
 
-### Making a Progressive Web App
+                        <div className='searchBar'>
+                            <input type="text" placeholder='Search News' value={search} onChange={handleInput} />
+                            <button onClick={getdata}>Search</button>
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-### Advanced Configuration
+                        </div>
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
-### Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+                    </ul>
 
-### `npm run build` fails to minify
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+
+
+
+
+
+                </div>
+            </nav>
+            <div>
+
+
+                <p className='head'>Stay Update with Trending News
+
+                </p>
+            </div>
+
+
+            <div className='categoryBtn'>
+                <button onClick={userInput} value="politics">Politics</button>
+                <button onClick={userInput} value="entertainments">Entertainments</button>
+                <button onClick={userInput} value="health">Health</button>
+                <button onClick={userInput} value="fitness">Fitness</button>
+                <button onClick={userInput} value="sport">Sport</button>
+
+
+
+            </div>
+
+
+
+            <div>
+
+
+                {newsData ? <Card data={newsData} /> : null}
+            </div>
+        </div>
+    )
+}
+
+export default Newsapp
+
+**************************************************************************************************************************************************
+CARD.JS
+
+import React from 'react'
+//for access news data on card used props and <Card data={newsData}/>from Newsapp.js takes data
+/*const Card = (props) => {
+     console.log(props.data);* this is first method to access data*/
+const Card = ({ data }) => {
+    console.log(data);
+
+
+    const readmore = (url) => {
+        window.open(url)// this function is made cause i want when click url of any news it open on new window
+
+    }
+
+
+
+    //map fun is iterate the data or make seperate like  0,1,2,3,4...
+
+    //window.open(curItem.url)this is use for when click on url so it open only url specific it is not apply other eg. perticurly for url ,image  readmore button opne in new tab
+    return (
+        <div className='cardContainer' >
+            {data.map((curItem, index) => {
+
+                //if (!curItem.urlToImage){this is used for empty image news not disply
+                if (!curItem.urlToImage) {
+
+                    return null
+                }
+                else {
+
+
+
+                    return (
+
+                        < div className='card'>
+                            <img onClick={() => window.open(curItem.url)} src={curItem.urlToImage} />
+                            <div className='cardContent'>
+                                <a className='tite' onClick={() => window.open(curItem.url)}>{curItem.title}</a>
+                                <p>{curItem.description}</p>
+                                <button onClick={() => window.open(curItem.url)}>Read More</button >
+                            </div>
+                        </div>
+                    )
+
+                }
+
+            })}
+
+        </div>
+    )
+}
+
+export default Card
+
