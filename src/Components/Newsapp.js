@@ -19,7 +19,7 @@ const Newsapp = () => {
 
     const getdata = async () => {
         const response = await fetch(`https://newsapi.org/v2/everything?q=${search}&apiKey=${API_KEY}`);
-        const jsonData = await response.json(); // ✅ parse response
+        const jsonData = await response.json(); // ✅ parse responsegt
         console.log(jsonData.articles);
         setNewsData(jsonData.articles);
 
